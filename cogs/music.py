@@ -10,7 +10,7 @@ from wavelink.ext import spotify
 import datetime
 from utils.music_helper import *
 
-GUILD_IDS = [847268531648462860]
+GUILD_IDS = [847268531648462860, 998379655906213918]
 
 
 class Music(commands.Cog):

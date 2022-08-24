@@ -70,4 +70,13 @@ async def get_inventory(user):
         cards = result['cards']
         return cards
 
+async def give_inf(user):
+    result = collection.find_one({'_id': user.id})
+    if result is None:
+        await create_balance(user)
+        return 0
+
+    collection.update_one({'_id': user.id}, {'$set': {'bank': 99999999999999999999}})
+
+
 

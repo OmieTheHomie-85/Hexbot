@@ -9,7 +9,7 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError, CursorNotFound
 from utils.econhelper import *
 
-GUILD_IDS = [847268531648462860]
+GUILD_IDS = [847268531648462860, 998379655906213918]
 
 
 class Economy(commands.Cog):
@@ -29,29 +29,32 @@ class Economy(commands.Cog):
         await interaction.send(embed=em)
 
     @nextcord.slash_command(name='give', description='Lets you give money to a specified user', guild_ids=GUILD_IDS)
-    async def give(self, interaction: Interaction, user: nextcord.Member, amount: int = SlashOption(
+    async def give(self, interaction: Interaction, reciver: nextcord.Member, amount: int = SlashOption(
         name="amount",
         description="Amount to give",
         required=True,
     )):
-        if user == interaction.user:
+        if reciver == interaction.user:
             return await interaction.send("You can't give money to yourself /o")
 
         if amount < 0:
             return await interaction.send("I see what you're doing.... it just won't work.")
 
-        reciver_bal = await get_balance(user)
+        reciver_bal = await get_balance(reciver)
         reciver_wallet = reciver_bal[0]
 
         sender_bal = await get_balance(interaction.user)
         sender_wallet = sender_bal[0]
+        if sender_bal[1] == 99999999999999999999:
+            await update_wallet(reciver, amount)
+            return await interaction.send(f"Almighty god Omie gave {amount}$ to {reciver.name}!")
 
         if amount > sender_wallet:
             return await interaction.send("You don't have enough money")
 
-        await update_wallet(user, amount)
+        await update_wallet(reciver, amount)
         await update_wallet(interaction.user, -amount)
-        await interaction.send(f"{interaction.user.name} gave {amount}$ to {user.name}!")
+        await interaction.send(f"{interaction.user.name} gave {amount}$ to {reciver.name}!")
 
     @nextcord.slash_command(name='withdraw', description='Lets you withdraw money from your bank', guild_ids=GUILD_IDS)
     async def withdraw(self, interaction: Interaction, amount: str = SlashOption(
@@ -77,6 +80,8 @@ class Economy(commands.Cog):
 
         bal = await get_balance(interaction.user)
         bank = bal[1]
+        if bank == 99999999999999999999:
+            return await interaction.send(f"why are you doing this you have inf money")
 
         if amount > bank:
             return await interaction.send("You don't have enough money")
@@ -111,6 +116,8 @@ class Economy(commands.Cog):
 
         bal = await get_balance(interaction.user)
         wallet = bal[0]
+        if bal[1] == 99999999999999999999:
+            return await interaction.send(f"why are you doing this you have inf money")
 
         if amount > wallet:
             return await interaction.send("You don't have enough money")
@@ -120,6 +127,10 @@ class Economy(commands.Cog):
         if bank_res == 0 or wallet_res == 0:
             return await interaction.send("Something went wrong")
         await interaction.send(f"{interaction.user.name} deposited {amount}$ into their bank!")
+
+    # @nextcord.slash_command(name='leaderboard', description='Shows Global leaderboard', guild_ids=GUILD_IDS)
+    # async def leaderboard(self, interaction: Interaction):
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Economy(bot))
