@@ -12,18 +12,18 @@ import pymongo
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError, CursorNotFound
 
-
 PREFIX = "&"
 GUILD_IDS = [847268531648462860]
+MESSAGE_ID = 1027050087098109982
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(PREFIX), owner_id=441184331826987019,
-                   enable_debug_events=True)
-status = cycle(["&help", "Help me I am dying!", "IT’S ABOUT DRIVE 🥶 IT’S ABOUT POWER 💪 WE STAY HUNRGY 💯 WE DEVOUR "
-                                                "🥱 PUT IN THE WORK 🥵 PUT IN THE HOURS 😎 AND TAKE WHAT’S OURS 💰"])
+                   enable_debug_events=True, intents = nextcord.Intents.all())
+status = cycle(["balls", "heyowo", "I have a 5$ foot long", "edible"])
 load_dotenv()
 
 colors = [0xffffff, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF]
 nl = '\n'
+DATABASE = MongoClient(os.getenv("MONGO_URI"))["discord"]["bloodniron"]
 
 
 # Cogs
@@ -58,14 +58,9 @@ async def on_ready():
     await custom_status.start()
 
 
-
-
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
-
-
-
 
 
 # Error handling
@@ -77,6 +72,8 @@ async def on_command_error(ctx, error):
 @tasks.loop(seconds=30)
 async def custom_status():
     await bot.change_presence(activity=nextcord.Game(next(status)))
+
+
 
 
 @bot.event
@@ -98,10 +95,20 @@ async def ping(interaction: Interaction):
     ping_embed.add_field(name='your ping to bot: ', value=f'{round(bot.latency * 1000)}')
     await interaction.send(embed=ping_embed)
 
+@tasks.loop(minutes=1)
+async def edit_message():
+    channel = bot.get_channel(1025065972698193970)
+    documents = DATABASE.find()
+    embed = nextcord.Embed(title="Blood n Iron Faction", color=0x00FF00)
+    for document in documents:
+        embed.add_field(name=f"{document['name']}:",
+                        value=f"{document['description']} \n Members: {len(document['members'])}", inline=False)
+        print(document['name'])
+    message = await channel.fetch_message(1027050087098109982)
+    print(message)
+    await channel.send(embed=embed)
 
 
+if __name__ == '__main__':
+    bot.run(getenv('TOKEN'))
 
-
-
-
-bot.run(getenv('TOKEN'))

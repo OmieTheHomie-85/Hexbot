@@ -5,7 +5,6 @@ Remember to set "enable_debug_events" to True in the client/bot!
 """
 import zlib
 import nextcord
-
 from nextcord.ext import commands
 
 

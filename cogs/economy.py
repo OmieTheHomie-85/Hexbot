@@ -9,7 +9,7 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError, CursorNotFound
 from utils.econhelper import *
 
-GUILD_IDS = [847268531648462860, 998379655906213918]
+GUILD_IDS = [847268531648462860, 998379655906213918, 937139620368511026, 1037910228240445531]
 
 
 class Economy(commands.Cog):

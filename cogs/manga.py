@@ -8,9 +8,10 @@ import pymongo
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError, CursorNotFound
 import aiohttp
+from utils.manga_view import MangaView
 from utils.manga_helper import *
 
-GUILD_IDS = [847268531648462860, 930961690672128000, 998379655906213918]
+GUILD_IDS = [847268531648462860, 930961690672128000, 998379655906213918, 937139620368511026]
 
 
 class Manga(commands.Cog):
@@ -21,7 +22,7 @@ class Manga(commands.Cog):
     async def manga(self, interaction: Interaction, query: str = SlashOption(name="name", required=True)):
         await interaction.response.defer()
         embed = await search_manga(query, 1)
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, view=MangaView())
 
 
 def setup(bot: commands.Bot):

@@ -2,10 +2,10 @@ import nextcord
 from nextcord.ext import commands, tasks
 from nextcord import Interaction, SlashOption, ChannelType
 
-from utils.EventAnnounceView import EventAnnounceView
+from utils.event_announce_view import EventAnnounceView
 from utils.RoleView import RoleView
 
-GUILD_IDS = [847268531648462860]
+GUILD_IDS = [847268531648462860, 937139620368511026]
 
 
 class Event(commands.Cog):
@@ -13,7 +13,7 @@ class Event(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_ready(self, ctx: commands.Context):
+    async def on_ready(self):
         self.bot.add_view(RoleView())
         self.bot.add_view(EventAnnounceView())
 
@@ -21,7 +21,7 @@ class Event(commands.Cog):
     async def event_role(self, interaction: Interaction):
         await interaction.send("Click a button to add or remove the **Event Ping** role", view=RoleView())
 
-    @nextcord.slash_command(name="announce", description="Announce an Event")
+    @nextcord.slash_command(name="announce", description="Announce an Event", guild_ids=GUILD_IDS)
     async def announce(self, interaction: Interaction, message):
         em = nextcord.Embed(title="Event Announcement", description=message)
         em.set_footer(text=f"Created by: {interaction.user}", icon_url=interaction.user.avatar.url)

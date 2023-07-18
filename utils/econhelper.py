@@ -1,5 +1,4 @@
 import os, random
-import nextcord
 import asyncio
 from nextcord.ext import commands, tasks
 from nextcord import Interaction, SlashOption, ChannelType
